@@ -38,7 +38,7 @@ export default class App extends React.Component {
 
   _sendNotification (delayed = false) {
     const localNotification = {
-      title: 'Testing Title',
+      title: `${delayed ? 'Delayed' : 'Immediate'} testing Title`,
       body: 'Testing body',
       data: { test: 'value' }
     }
