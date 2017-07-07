@@ -1,52 +1,43 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
-import { Notifications, Permissions, Constants } from 'expo'
+import { StyleSheet, Alert, Text, View, Button, Platform } from 'react-native';
+import { Notifications, Permissions } from 'expo'
 import moment from 'moment'
+import Reminders from './utils/Reminders'
 
 export default class App extends React.Component {
-  async componentDidMount() {
-    let result = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-
-    if (Constants.isDevice && result.status === 'granted') {
-      console.log('Notification permissions granted.')
-    }
+  componentWillMount() {
+    this._listenForNotifications();
   }
 
   // Private methods
 
-  _handleNotification = ({ origin, data }) => {
-    console.info(`Notification (${origin}) with data: ${JSON.stringify(data)}`)
+  _listenForNotifications = () => {
+    Notifications.addListener(notification => {
+      console.log('Notification received:', notification)
+
+      if (notification.origin === 'received' && Platform.OS === 'ios') {
+        Alert.alert(
+          'A friendly reminder',
+          `"${notification.data.title}" is starting soon!`
+        )
+      }
+    })
   }
 
-  _sendImmediateNotification () {
-    const localNotification = {
-      title: 'Immediate testing Title',
-      body: 'Testing body',
-      data: { test: 'value' }
+  _sendImmediateNotification = async () => {
+    try {
+      await Reminders.scheduleAsync((new Date()).getTime() + 50, 'Immediate testing title');
+    } catch (e) {
+      alert('Oops, you need to enable notifications for the app!');
     }
-
-    console.log('Scheduling immediate notification:', { localNotification })
-
-    Notifications.presentLocalNotificationAsync(localNotification)
-      .then(id => console.info(`Immediate notification scheduled (${id})`))
-      .catch(err => console.error(err))
   }
 
-  _sendDelayedNotification () {
-    const localNotification = {
-      title: 'Delayed testing Title',
-      body: 'Testing body',
-      data: { test: 'value' }
+  _sendDelayedNotification = async () => {
+    try {
+      await Reminders.scheduleAsync((new Date()).getTime() + 5000, 'Delayed testing title');
+    } catch (e) {
+      alert('Oops, you need to enable notifications for the app!');
     }
-    const schedulingOptions = {
-      time: (new Date()).getTime() + 5000
-    }
-
-    console.log('Scheduling delayed notification:', { localNotification, schedulingOptions })
-
-    Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
-      .then(id => console.info(`Delayed notification scheduled (${id}) at ${moment(schedulingOptions.time).format()}`))
-      .catch(err => console.error(err))
   }
 
   // Rendering
@@ -54,8 +45,14 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button title='Send Immediate Notification' onPress={() => this._sendImmediateNotification()} />
-        <Button title='Send Delayed Notification' onPress={() => this._sendDelayedNotification()} />
+        <Button 
+          title='Send Immediate Notification' 
+          onPress={() => this._sendImmediateNotification()} 
+        />
+        <Button 
+          title='Send Delayed Notification' 
+          onPress={() => this._sendDelayedNotification()} 
+        />
       </View>
     );
   }
