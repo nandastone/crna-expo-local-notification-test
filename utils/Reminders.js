@@ -30,19 +30,18 @@ async function scheduleAsync(time, title) {
   const notificationId = await Notifications.scheduleLocalNotificationAsync(notificationOptions, schedulingOptions)
 
   console.log(`Notification scheduled at ${moment(time).format()}:`, notificationId, { notificationOptions, schedulingOptions })
-
-  // Store.dispatch({
-  //   type: 'SET_REMINDER',
-  //   data: { time: timeString, notificationId },
-  // });
 }
 
 async function cancelAsync(notificationId) {
-  // Store.dispatch({ type: 'REMOVE_REMINDER', data: { notificationId } });
   await Notifications.cancelScheduledNotificationAsync(notificationId);
+}
+
+async function cancelAllAsync() {
+  await Notifications.cancelAllScheduledNotificationsAsync();
 }
 
 export default {
   scheduleAsync,
   cancelAsync,
+  cancelAllAsync
 };

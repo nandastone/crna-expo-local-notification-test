@@ -26,7 +26,8 @@ export default class App extends React.Component {
 
   _sendImmediateNotification = async () => {
     try {
-      await Reminders.scheduleAsync((new Date()).getTime() + 50, 'Immediate testing title');
+      await Reminders.cancelAllAsync()
+      await Reminders.scheduleAsync(moment().valueOf(), 'Immediate testing title');
     } catch (e) {
       alert('Oops, you need to enable notifications for the app!');
     }
@@ -34,7 +35,8 @@ export default class App extends React.Component {
 
   _sendDelayedNotification = async () => {
     try {
-      await Reminders.scheduleAsync((new Date()).getTime() + 5000, 'Delayed testing title');
+      await Reminders.cancelAllAsync()
+      await Reminders.scheduleAsync(moment().add(5, 'seconds').valueOf(), 'Delayed testing title');
     } catch (e) {
       alert('Oops, you need to enable notifications for the app!');
     }
