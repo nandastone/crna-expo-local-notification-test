@@ -29,7 +29,7 @@ async function scheduleAsync(time, title) {
   }
   const notificationId = await Notifications.scheduleLocalNotificationAsync(notificationOptions, schedulingOptions)
 
-  console.log('Notification scheduled:', notificationId, { notificationOptions, schedulingOptions })
+  console.log(`Notification scheduled at ${moment(time).format()}:`, notificationId, { notificationOptions, schedulingOptions })
 
   // Store.dispatch({
   //   type: 'SET_REMINDER',
